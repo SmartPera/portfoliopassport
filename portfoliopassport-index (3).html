@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>My Portfolio — SmartPera Passport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1A237E; --blue:#1565C0; --blue-d:#0D47A1; --gold:#F9A825;
+    --green:#2E7D32; --red:#C62828; --grey0:#ECEFF1; --dark:#263238;
+    --muted:#64748B; --card:#FFFFFF; --bg:#F0F4FF; --rad:12px;
+    --sh:0 2px 12px rgba(26,35,126,0.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{min-height:100%;background:var(--bg);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--dark);margin:0;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:640px;margin:0 auto;padding-bottom:40px;}
+  .app-header{background:linear-gradient(135deg,var(--navy) 0%,#283593 60%,#1976D2 100%);padding:18px 16px 16px;text-align:center;position:relative;}
+  .app-header h1{font-size:19px;font-weight:800;color:#fff;margin:0;line-height:1.2;}
+  .app-header .sub{font-size:10px;color:rgba(255,255,255,0.6);margin-top:3px;}
+  .back-link{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);text-decoration:none;background:rgba(255,255,255,0.15);padding:5px 10px;border-radius:20px;border:none;cursor:pointer;}
+  .back-link:hover{color:#fff;background:rgba(255,255,255,0.25);}
+  .cur-toggle{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:6px;}
+  .cur-btn{background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.8);font-size:10px;font-weight:700;padding:5px 8px;border-radius:14px;cursor:pointer;}
+  .cur-btn.active{background:#fff;color:var(--blue-d);}
+  .fx-edit{background:rgba(255,255,255,0.15);border:none;color:#fff;width:22px;height:22px;border-radius:50%;font-size:10px;cursor:pointer;}
+
+  .pp-band{margin:14px 14px 0;}
+  .pp-loading{text-align:center;padding:20px;color:var(--muted);font-size:13px;}
+  .pp-connected{display:none;}
+  .pp-connected.show{display:flex;align-items:center;gap:8px;background:white;border-radius:var(--rad);padding:10px 14px;box-shadow:var(--sh);font-size:13px;font-weight:700;color:var(--blue-d);}
+  .pp-manual{text-align:center;padding:28px 20px;background:white;border-radius:var(--rad);box-shadow:var(--sh);}
+  .pp-gate-icon{font-size:40px;margin-bottom:10px;}
+  .pp-gate-title{font-size:17px;font-weight:800;color:#0F172A;margin-bottom:6px;}
+  .pp-gate-sub{font-size:14px;color:#64748B;max-width:420px;margin:0 auto 18px;line-height:1.5;}
+  .pp-gate-btn{display:inline-block;background:var(--blue);color:#fff;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:15px;}
+  .hide{display:none !important;}
+  .gate-active{display:none !important;}
+
+  .sec-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;padding:18px 14px 8px;}
+  .summary-card{background:white;border-radius:16px;margin:0 14px;padding:16px;box-shadow:var(--sh);}
+  .sum-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .sum-label{font-size:12px;color:var(--muted);font-weight:600;}
+  .sum-val{font-size:24px;font-weight:800;color:var(--dark);}
+  .sum-val.pos{color:var(--green);}
+  .sum-val.neg{color:var(--red);}
+  .sum-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:var(--muted);}
+  .sum-row b{color:var(--dark);}
+  .chart-wrap{position:relative;height:180px;margin-top:12px;}
+
+  .tabbar{display:flex;margin:14px 14px 0;background:white;border-radius:12px;padding:4px;box-shadow:var(--sh);}
+  .tabbtn{flex:1;text-align:center;padding:10px 4px;font-size:12px;font-weight:700;color:var(--muted);border-radius:9px;cursor:pointer;border:none;background:none;}
+  .tabbtn.active{background:var(--blue);color:#fff;}
+  .tabpanel{display:none;}
+  .tabpanel.active{display:block;}
+  .view-toggle-wrap{text-align:right;margin:8px 14px 0;}
+  .view-toggle-btn{background:white;border:1.5px solid var(--grey0);color:var(--muted);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;cursor:pointer;}
+  .list-table-wrap{margin:8px 14px 0;background:white;border-radius:10px;box-shadow:var(--sh);overflow-x:auto;}
+  .list-table{width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap;}
+  .list-table th{background:var(--grey0);color:var(--muted);font-weight:700;text-transform:uppercase;font-size:9px;letter-spacing:0.3px;padding:8px 10px;text-align:left;position:sticky;top:0;}
+  .list-table td{padding:8px 10px;border-top:1px solid var(--grey0);color:var(--dark);}
+  .list-table td button{border:none;background:var(--grey0);width:22px;height:22px;border-radius:6px;font-size:10px;cursor:pointer;margin-right:2px;}
+  .list-table td button.del{background:#FFEBEE;}
+
+  .entry-card{background:white;border-radius:12px;margin:10px 14px 0;padding:14px;box-shadow:var(--sh);}
+  .entry-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .entry-name{font-size:15px;font-weight:800;color:var(--dark);}
+  .entry-tag{display:inline-block;font-size:10px;font-weight:700;color:var(--blue-d);background:#E3F2FD;padding:2px 8px;border-radius:10px;margin-top:3px;}
+  .entry-actions{display:flex;gap:6px;}
+  .entry-actions button{border:none;background:var(--grey0);width:28px;height:28px;border-radius:8px;font-size:13px;cursor:pointer;}
+  .entry-actions .del{background:#FFEBEE;}
+  .entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:10px;font-size:12px;}
+  .entry-grid .lbl{color:var(--muted);}
+  .entry-grid .val{font-weight:700;color:var(--dark);}
+  .entry-notes{margin-top:8px;font-size:11px;color:var(--muted);font-style:italic;}
+  .flag-warn{margin-top:8px;padding:7px 10px;background:#FFF3E0;border-radius:8px;font-size:11px;color:#E65100;font-weight:600;}
+  .empty-state{text-align:center;padding:24px;color:var(--muted);font-size:13px;}
+
+  .add-btn{display:block;width:calc(100% - 28px);margin:14px 14px 0;background:var(--blue);color:#fff;border:none;padding:13px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;align-items:flex-end;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal-sheet{background:white;border-radius:20px 20px 0 0;padding:18px;width:100%;max-width:640px;max-height:88vh;overflow-y:auto;}
+  .modal-sheet h3{margin:0 0 14px;font-size:16px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:5px;}
+  .field input, .field select, .field textarea{width:100%;padding:11px;border:1.5px solid var(--grey0);border-radius:9px;font-size:14px;font-family:inherit;}
+  .field textarea{resize:vertical;min-height:50px;}
+  .modal-actions{display:flex;gap:10px;margin-top:16px;}
+  .modal-actions button{flex:1;padding:13px;border-radius:10px;font-weight:700;font-size:14px;border:none;cursor:pointer;}
+  .btn-cancel{background:var(--grey0);color:var(--dark);}
+  .btn-save-entry{background:var(--blue);color:#fff;}
+
+  .save-section{margin:20px 14px 0;text-align:center;}
+  .save-btn{background:var(--gold);color:var(--dark);border:none;padding:15px 32px;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer;width:100%;}
+  .save-btn:disabled{opacity:0.6;}
+  .save-status{margin-top:10px;font-size:13px;color:var(--muted);min-height:16px;}
+  .save-status.ok{color:var(--green);font-weight:600;}
+  .save-status.err{color:var(--red);font-weight:600;}
+
+  .disclaimer{margin:16px 14px 0;font-size:10px;color:var(--muted);line-height:1.5;text-align:center;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity 0.3s;z-index:100;max-width:88vw;text-align:center;}
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<div class="app-header">
+  <button type="button" class="back-link" id="backBtn">← Dashboard</button>
+  <div class="cur-toggle" id="curToggle">
+    <button type="button" class="cur-btn active" data-cur="SGD">SGD</button>
+    <button type="button" class="cur-btn" data-cur="PHP">PHP</button>
+    <button type="button" class="fx-edit" id="fxEditBtn" title="Set your own exchange rate">✎</button>
+  </div>
+  <h1>My Portfolio</h1>
+  <div class="sub">Savings, Insurance &amp; Loans — all in one place</div>
+</div>
+
+<div class="pp-band">
+  <div class="pp-loading" id="ppLoading">Connecting to your Passport…</div>
+  <div class="pp-connected" id="ppConnected"><span>👤</span><span id="ppName">–</span></div>
+  <div class="pp-manual hide" id="ppManual">
+    <div class="pp-gate-icon">🔒</div>
+    <div class="pp-gate-title" id="ppGateTitle">This tool is personalised to your Passport profile</div>
+    <div class="pp-gate-sub" id="ppGateSub">Complete your free SmartPera Passport profile to unlock My Portfolio.</div>
+    <a class="pp-gate-btn" id="ppGateBtn" href="https://smartpera.com/FinancePassport/">Complete My Profile →</a>
+  </div>
+</div>
+
+<div id="mainBody" class="gate-active">
+
+  <div class="sec-label">Net Worth Snapshot</div>
+  <div class="summary-card">
+    <div class="sum-total">
+      <div class="sum-label">Total Assets</div>
+      <div class="sum-val pos" id="totalAssets">–</div>
+    </div>
+    <div class="sum-total">
+      <div class="sum-label">Total Liabilities</div>
+      <div class="sum-val neg" id="totalLiabilities">–</div>
+    </div>
+    <div class="sum-row"><span>Savings &amp; Investments</span><b id="sumSavings">–</b></div>
+    <div class="sum-row"><span>Insurance Policy Value</span><b id="sumInsurance">–</b></div>
+    <div class="sum-row"><span>Loans Outstanding</span><b id="sumLoans">–</b></div>
+    <div class="chart-wrap"><canvas id="allocChart"></canvas></div>
+  </div>
+
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="savings">💰 Savings</button>
+    <button class="tabbtn" data-tab="insurance">🛡️ Insurance</button>
+    <button class="tabbtn" data-tab="loans">💳 Loans</button>
+  </div>
+  <div class="view-toggle-wrap">
+    <button type="button" class="view-toggle-btn" id="viewToggleBtn" title="Switch view">☰ List View</button>
+  </div>
+
+  <div class="tabpanel active" id="panel-savings">
+    <div id="list-savings"></div>
+    <button class="add-btn" data-add="savings">+ Add Savings / Investment</button>
+  </div>
+  <div class="tabpanel" id="panel-insurance">
+    <div id="list-insurance"></div>
+    <button class="add-btn" data-add="insurance">+ Add Insurance Policy</button>
+  </div>
+  <div class="tabpanel" id="panel-loans">
+    <div id="list-loans"></div>
+    <button class="add-btn" data-add="loans">+ Add Loan</button>
+  </div>
+
+  <div class="save-section">
+    <button class="save-btn" id="saveBtn">💾 Update My Passport Data</button>
+    <div class="save-status" id="saveStatus"></div>
+  </div>
+
+  <div class="disclaimer">Figures shown are based only on what you enter here — informational only, not financial advice. SmartPera is not liable for decisions made based on this summary.</div>
+</div>
+
+</div>
+
+<!-- ENTRY MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet" id="modalSheet"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+  var el = function(id){ return document.getElementById(id); };
+  var txt = function(id,v){ var e=el(id); if(e) e.textContent=v; };
+  var show = function(id){ var e=el(id); if(e){ e.classList.remove('hide'); e.classList.add('show'); } };
+  var hide = function(id){ var e=el(id); if(e){ e.classList.add('hide'); e.classList.remove('show'); } };
+
+  var FREQ_OPTIONS = ['Monthly','Quarterly','Semi-Annual','Annual','Ad-hoc'];
+  var PURPOSE_OPTIONS = ['Personal','Education','Retirement','Business','Others'];
+  var LOAN_TYPES = ['Mortgage','Car Loan','Personal Loan','Student Loan','Credit Card Loan','Business Loan','Other'];
+
+  var passportData = null;
+  var cur = 'SGD';
+  var fxRate = 44;
+  var fxOverride = null;
+  var portfolio = { savings: {}, insurance: {}, loans: {} };
+  var editingCategory = null, editingId = null;
+
+  function toast(msg){
+    var t = el('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  function fmt(amount){
+    if (typeof amount !== 'number' || isNaN(amount)) amount = 0;
+    var rate = (cur === 'PHP') ? (fxOverride || fxRate) : 1;
+    var value = amount * (cur === 'PHP' ? rate : 1);
+    var symbol = cur === 'PHP' ? '₱' : 'S$';
+    return symbol + value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // ── Currency toggle ──
+  document.querySelectorAll('.cur-btn[data-cur]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      cur = btn.dataset.cur;
+      document.querySelectorAll('.cur-btn[data-cur]').forEach(function(b){ b.classList.toggle('active', b===btn); });
+      renderAll();
+    });
+  });
+  el('fxEditBtn').addEventListener('click', function(){
+    var current = fxOverride ? fxOverride.toFixed(2) : fxRate.toFixed(2);
+    var input = prompt('Set your own PHP per 1 SGD rate (leave blank to use the live market rate):', current);
+    if (input === null) return;
+    var trimmed = input.trim();
+    if (trimmed === '') { fxOverride = null; }
+    else if (!isNaN(parseFloat(trimmed)) && parseFloat(trimmed) > 0) { fxOverride = parseFloat(trimmed); }
+    else { alert('Please enter a valid positive number, e.g. 44.20'); return; }
+    saveFxPreference();
+    renderAll();
+  });
+
+  var viewMode = localStorage.getItem('sp_portfolio_view') || 'grid';
+
+  el('viewToggleBtn').textContent = viewMode === 'grid' ? '☰ List View' : '⊞ Grid View';
+  el('viewToggleBtn').addEventListener('click', function(){
+    viewMode = viewMode === 'grid' ? 'list' : 'grid';
+    localStorage.setItem('sp_portfolio_view', viewMode);
+    el('viewToggleBtn').textContent = viewMode === 'grid' ? '☰ List View' : '⊞ Grid View';
+    renderAll();
+  });
+
+  // ── Tabs ──
+  document.querySelectorAll('.tabbtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.toggle('active', b===btn); });
+      document.querySelectorAll('.tabpanel').forEach(function(p){ p.classList.remove('active'); });
+      el('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ── Rendering ──
+  function computeTotals(){
+    var savingsTotal = 0, insuranceTotal = 0, loansTotal = 0;
+    Object.keys(portfolio.savings).forEach(function(id){ savingsTotal += (portfolio.savings[id].currentValue || 0); });
+    Object.keys(portfolio.insurance).forEach(function(id){ insuranceTotal += (portfolio.insurance[id].policyValue || 0); });
+    Object.keys(portfolio.loans).forEach(function(id){ loansTotal += (portfolio.loans[id].balance || 0); });
+    return { savingsTotal: savingsTotal, insuranceTotal: insuranceTotal, loansTotal: loansTotal,
+      totalAssets: savingsTotal + insuranceTotal, totalLiabilities: loansTotal };
+  }
+
+  var chartInstance = null;
+  function renderChart(t){
+    var ctx = el('allocChart');
+    if (!ctx || typeof Chart === 'undefined') return;
+    if (chartInstance) chartInstance.destroy();
+    if (t.totalAssets <= 0 && t.totalLiabilities <= 0) { ctx.style.display='none'; return; }
+    ctx.style.display='block';
+    chartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Savings & Investments', 'Insurance Value', 'Loans (Liability)'],
+        datasets: [{ data: [t.savingsTotal, t.insuranceTotal, t.loansTotal], backgroundColor: ['#1565C0', '#2E7D32', '#C62828'], borderWidth: 0 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
+    });
+  }
+
+  function renderSummary(){
+    var t = computeTotals();
+    txt('totalAssets', fmt(t.totalAssets));
+    txt('totalLiabilities', fmt(t.totalLiabilities));
+    txt('sumSavings', fmt(t.savingsTotal));
+    txt('sumInsurance', fmt(t.insuranceTotal));
+    txt('sumLoans', fmt(t.loansTotal));
+    renderChart(t);
+    return t;
+  }
+
+  function renderList(category){
+    var listEl = el('list-' + category);
+    var entries = portfolio[category];
+    var ids = Object.keys(entries);
+    if (ids.length === 0) {
+      listEl.innerHTML = '<div class="empty-state">Nothing added yet.</div>';
+      return;
+    }
+    if (viewMode === 'list') {
+      var cols, rows;
+      if (category === 'savings') {
+        cols = ['Name','Purpose','Amount','Frequency','Payment Until','Current Value',''];
+        rows = ids.map(function(id){
+          var e = entries[id];
+          return [esc(e.name||'–'), esc(e.purpose||'–'), fmt(e.amount), esc(e.frequency||'–'), esc(e.paymentUntil||'–'), fmt(e.currentValue), rowActions(category,id)];
+        });
+      } else if (category === 'insurance') {
+        cols = ['Name','Premium','Frequency','Until When','Policy Value',''];
+        rows = ids.map(function(id){
+          var e = entries[id];
+          return [esc(e.name||'–'), fmt(e.premium), esc(e.frequency||'–'), esc(e.until||'–'), fmt(e.policyValue), rowActions(category,id)];
+        });
+      } else {
+        cols = ['Name','Type','Loan Amount','Monthly Pmt','Balance','Until When',''];
+        rows = ids.map(function(id){
+          var e = entries[id];
+          return [esc(e.name||'–'), esc(e.type||'–'), fmt(e.loanAmount), fmt(e.monthlyPayment), fmt(e.balance), esc(e.until||'–'), rowActions(category,id)];
+        });
+      }
+      var html = '<div class="list-table-wrap"><table class="list-table"><thead><tr>';
+      cols.forEach(function(c){ html += '<th>' + c + '</th>'; });
+      html += '</tr></thead><tbody>';
+      rows.forEach(function(r){
+        html += '<tr>' + r.map(function(cell){ return '<td>' + cell + '</td>'; }).join('') + '</tr>';
+      });
+      html += '</tbody></table></div>';
+      listEl.innerHTML = html;
+      return;
+    }
+    listEl.innerHTML = ids.map(function(id){
+      var e = entries[id];
+      var card = '<div class="entry-card">';
+      card += '<div class="entry-top"><div><div class="entry-name">' + esc(e.name || 'Untitled') + '</div>';
+      if (category === 'savings') card += '<span class="entry-tag">' + esc(e.purpose||'Personal') + '</span>';
+      if (category === 'loans') card += '<span class="entry-tag">' + esc(e.type||'Other') + '</span>';
+      card += '</div><div class="entry-actions"><button data-edit="' + category + ':' + id + '">✎</button><button class="del" data-del="' + category + ':' + id + '">🗑</button></div></div>';
+      card += '<div class="entry-grid">';
+      if (category === 'savings') {
+        card += fieldRow('Amount', fmt(e.amount)) + fieldRow('Frequency', e.frequency||'–');
+        card += fieldRow('Payment Until', e.paymentUntil||'–') + fieldRow('Current Value', fmt(e.currentValue));
+      } else if (category === 'insurance') {
+        card += fieldRow('Premium', fmt(e.premium)) + fieldRow('Frequency', e.frequency||'–');
+        card += fieldRow('Until When', e.until||'–') + fieldRow('Policy Value', fmt(e.policyValue));
+      } else {
+        card += fieldRow('Loan Amount', fmt(e.loanAmount)) + fieldRow('Monthly Payment', fmt(e.monthlyPayment));
+        card += fieldRow('Balance', fmt(e.balance)) + fieldRow('Until When', e.until||'–');
+      }
+      card += '</div>';
+      if (category === 'loans' && typeof e.balance === 'number' && typeof e.loanAmount === 'number' && e.balance > e.loanAmount) {
+        card += '<div class="flag-warn">⚠️ Balance is higher than the original loan amount — common with accrued interest, but worth double-checking.</div>';
+      }
+      if (e.notes) card += '<div class="entry-notes">' + esc(e.notes) + '</div>';
+      card += '</div>';
+      return card;
+    }).join('');
+  }
+  function fieldRow(lbl, val){ return '<div class="lbl">' + lbl + '</div><div class="val">' + val + '</div>'; }
+  function rowActions(category, id){
+    return '<button data-edit="' + category + ':' + id + '">✎</button> <button class="del" data-del="' + category + ':' + id + '">🗑</button>';
+  }
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function renderAll(){
+    renderSummary();
+    ['savings','insurance','loans'].forEach(renderList);
+  }
+
+  // ── Add/Edit modal ──
+  function openModal(category, id){
+    editingCategory = category; editingId = id || null;
+    var e = id ? portfolio[category][id] : {};
+    var html = '<h3>' + (id ? 'Edit' : 'Add') + ' ' + categoryLabel(category) + '</h3>';
+    html += '<div class="field"><label>Name</label><input id="f-name" value="' + (e.name ? escAttr(e.name) : '') + '" placeholder="e.g. OCBC Savings"></div>';
+
+    if (category === 'savings') {
+      html += selectField('f-purpose', 'Purpose', PURPOSE_OPTIONS, e.purpose);
+      html += numField('f-amount', 'Amount', e.amount);
+      html += selectField('f-frequency', 'Frequency', FREQ_OPTIONS, e.frequency);
+      html += '<div class="field"><label>Payment Until When</label><input id="f-until" value="' + (e.paymentUntil||'') + '" placeholder="e.g. 2040 or Ongoing"></div>';
+      html += numField('f-currentvalue', 'Current Value', e.currentValue);
+    } else if (category === 'insurance') {
+      html += numField('f-premium', 'Premium', e.premium);
+      html += selectField('f-frequency', 'Frequency', FREQ_OPTIONS, e.frequency);
+      html += '<div class="field"><label>Until When</label><input id="f-until" value="' + (e.until||'') + '" placeholder="e.g. 2050 or Whole Life"></div>';
+      html += numField('f-policyvalue', 'Policy Value', e.policyValue);
+    } else {
+      html += selectField('f-loantype', 'Type of Loan', LOAN_TYPES, e.type);
+      html += numField('f-loanamount', 'Loan Amount', e.loanAmount);
+      html += numField('f-monthlypayment', 'Monthly Payment', e.monthlyPayment);
+      html += numField('f-balance', 'Balance', e.balance);
+      html += '<div class="field"><label>Until When</label><input id="f-until" value="' + (e.until||'') + '" placeholder="e.g. 2035"></div>';
+    }
+    html += '<div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Optional">' + (e.notes||'') + '</textarea></div>';
+    html += '<div class="modal-actions"><button class="btn-cancel" id="modalCancel">Cancel</button><button class="btn-save-entry" id="modalSaveEntry">' + (id?'Save Changes':'Add') + '</button></div>';
+    el('modalSheet').innerHTML = html;
+    el('modalOverlay').classList.add('open');
+    el('modalCancel').addEventListener('click', closeModal);
+    el('modalSaveEntry').addEventListener('click', saveEntryFromModal);
+  }
+  function selectField(id, label, options, current){
+    var h = '<div class="field"><label>' + label + '</label><select id="' + id + '">';
+    options.forEach(function(o){ h += '<option' + (o===current?' selected':'') + '>' + o + '</option>'; });
+    return h + '</select></div>';
+  }
+  function numField(id, label, val){
+    return '<div class="field"><label>' + label + '</label><input id="' + id + '" type="text" inputmode="decimal" value="' + (typeof val==='number'?val:'') + '" placeholder="0.00"></div>';
+  }
+  function escAttr(s){ return String(s).replace(/"/g,'&quot;'); }
+  function numVal(id){ var v = parseFloat((el(id).value||'0').replace(/,/g,'')); return isNaN(v)?0:v; }
+  function categoryLabel(c){ return c==='savings'?'Savings / Investment':(c==='insurance'?'Insurance Policy':'Loan'); }
+
+  function closeModal(){ el('modalOverlay').classList.remove('open'); }
+
+  function saveEntryFromModal(){
+    var name = el('f-name').value.trim();
+    if (!name) { alert('Please enter a name.'); return; }
+    var entry = { name: name, notes: el('f-notes').value.trim(), lastUpdated: Date.now() };
+    if (editingCategory === 'savings') {
+      entry.purpose = el('f-purpose').value; entry.amount = numVal('f-amount');
+      entry.frequency = el('f-frequency').value; entry.paymentUntil = el('f-until').value.trim();
+      entry.currentValue = numVal('f-currentvalue');
+    } else if (editingCategory === 'insurance') {
+      entry.premium = numVal('f-premium'); entry.frequency = el('f-frequency').value;
+      entry.until = el('f-until').value.trim(); entry.policyValue = numVal('f-policyvalue');
+    } else {
+      entry.type = el('f-loantype').value; entry.loanAmount = numVal('f-loanamount');
+      entry.monthlyPayment = numVal('f-monthlypayment'); entry.balance = numVal('f-balance');
+      entry.until = el('f-until').value.trim();
+    }
+    var id = editingId || ('e' + Date.now() + Math.floor(Math.random()*1000));
+    portfolio[editingCategory][id] = entry;
+    closeModal();
+    renderAll();
+    toast(editingId ? 'Updated — remember to press Update My Passport Data' : 'Added — remember to press Update My Passport Data');
+  }
+
+  document.addEventListener('click', function(e){
+    var addBtn = e.target.closest('[data-add]');
+    if (addBtn) { openModal(addBtn.dataset.add, null); return; }
+    var editBtn = e.target.closest('[data-edit]');
+    if (editBtn) { var parts = editBtn.dataset.edit.split(':'); openModal(parts[0], parts[1]); return; }
+    var delBtn = e.target.closest('[data-del]');
+    if (delBtn) {
+      var p = delBtn.dataset.del.split(':');
+      if (confirm('Delete this entry?')) { delete portfolio[p[0]][p[1]]; renderAll(); toast('Deleted — remember to press Update My Passport Data'); }
+    }
+  });
+
+  // ── Passport connection (same pattern as Retirement Calculator) ──
+  function applyPassportData(data){
+    if(!data) return;
+    if(data.profileCompleted!==true){
+      showManualMode();
+      txt('ppGateTitle','Almost there — finish your Passport profile');
+      txt('ppGateSub','Complete your profile to unlock My Portfolio.');
+      el('ppGateBtn').href='https://smartpera.com/FinancePassport/dashboard.html?completeProfile=1';
+      return;
+    }
+    passportData = data;
+    txt('ppName', data.name || 'Passport User');
+    hide('ppLoading'); hide('ppManual'); show('ppConnected');
+    el('mainBody').classList.remove('gate-active');
+    if (typeof data.currencyPref === 'string') {
+      cur = data.currencyPref;
+      document.querySelectorAll('.cur-btn[data-cur]').forEach(function(b){ b.classList.toggle('active', b.dataset.cur===cur); });
+    }
+    if (typeof data.fxOverride === 'number') fxOverride = data.fxOverride;
+    loadPortfolioData(data.uid);
+  }
+  function showManualMode(){
+    hide('ppLoading'); hide('ppConnected'); show('ppManual');
+    el('mainBody').classList.add('gate-active');
+  }
+  function detectPassport(){ if(window.SMARTPERA_PASSPORT){applyPassportData(window.SMARTPERA_PASSPORT);return true;} return false; }
+  function readFromHash(){
+    if(location.hash.indexOf('#passport=')===0){
+      try{ var d=JSON.parse(atob(decodeURIComponent(location.hash.substring(10)))); applyPassportData(d); return true; }catch(e){ return false; }
+    }
+    return false;
+  }
+  function readFromStorage(){
+    try{ var s=localStorage.getItem('smartpera_passport_session'); if(s){var d=JSON.parse(s);if(d&&d.name){applyPassportData(d);return true;}} }catch(e){}
+    return false;
+  }
+  window.addEventListener('message', function(ev){
+    if(ev.data && ev.data.type==='SMARTPERA_PASSPORT'){ applyPassportData(ev.data.payload); }
+  });
+
+  var found = detectPassport()||readFromHash()||readFromStorage();
+  if(!found) setTimeout(function(){ if(!passportData) showManualMode(); },1500);
+
+  // ── Back button — saves first (if signed in), then navigates ──
+  el('backBtn').addEventListener('click', function(){
+    if (passportData && window.__spAuthUser) {
+      saveToFirebase(true);
+    } else {
+      window.location.href = 'https://smartpera.com/FinancePassport/dashboard.html';
+    }
+  });
+
+  el('saveBtn').addEventListener('click', function(){ saveToFirebase(false); });
+
+  function saveFxPreference(){
+    if (window.__spSaveCurrencyPref) window.__spSaveCurrencyPref(cur, fxOverride);
+  }
+
+  function saveToFirebase(thenNavigate){
+    if (!passportData || !passportData.uid) {
+      if (thenNavigate) window.location.href = 'https://smartpera.com/FinancePassport/dashboard.html';
+      return;
+    }
+    var btn = el('saveBtn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    txt('saveStatus',''); el('saveStatus').className='save-status';
+    var t = computeTotals();
+
+    function doSave(){
+      if (typeof window.__spSavePortfolio !== 'function') {
+        txt('saveStatus','Could not connect to Passport — please reload from your dashboard.');
+        el('saveStatus').className='save-status err';
+        btn.disabled=false; btn.textContent='💾 Update My Passport Data';
+        return;
+      }
+      window.__spSavePortfolio(passportData.uid, portfolio, t, cur, fxOverride).then(function(){
+        txt('saveStatus','✓ Saved!' + (thenNavigate ? ' Taking you to your dashboard…' : ''));
+        el('saveStatus').className='save-status ok';
+        btn.disabled=false; btn.textContent='💾 Update My Passport Data';
+        if (thenNavigate) setTimeout(function(){ window.location.href='https://smartpera.com/FinancePassport/dashboard.html'; }, 1100);
+      }).catch(function(err){
+        console.warn('Portfolio save failed:', err);
+        txt('saveStatus', err && err.message==='NOT_SIGNED_IN' ? 'You need to be logged into your Passport in this browser to save.' : 'Could not save right now — check your connection and try again.');
+        el('saveStatus').className='save-status err';
+        btn.disabled=false; btn.textContent='💾 Update My Passport Data';
+        if (thenNavigate) setTimeout(function(){ window.location.href='https://smartpera.com/FinancePassport/dashboard.html'; }, 1600);
+      });
+    }
+
+    // Critical fix: Firebase Auth may not have finished resolving yet when the
+    // user clicks Save (especially right after arriving from the dashboard).
+    // Waiting for it here is what actually prevents the silent data loss.
+    if (window.__spAuthUser === undefined) {
+      window.addEventListener('sp-auth-ready', doSave, { once: true });
+    } else {
+      doSave();
+    }
+  }
+
+  function loadPortfolioData(uid){
+    if (typeof window.__spWatchPortfolio !== 'function') { renderAll(); return; }
+    var firstLoad = true;
+    window.__spWatchPortfolio(uid, function(kind, data){
+      if (kind === 'portfolio') {
+        portfolio.savings = data.savings || {};
+        portfolio.insurance = data.insurance || {};
+        portfolio.loans = data.loans || {};
+        if (firstLoad && (Object.keys(portfolio.savings).length || Object.keys(portfolio.insurance).length || Object.keys(portfolio.loans).length)) {
+          toast('✓ Restored your saved portfolio.');
+        }
+      } else if (kind === 'passport') {
+        if (typeof data.currencyPref === 'string') {
+          cur = data.currencyPref;
+          document.querySelectorAll('.cur-btn[data-cur]').forEach(function(b){ b.classList.toggle('active', b.dataset.cur===cur); });
+        }
+        if (typeof data.fxOverride === 'number') fxOverride = data.fxOverride;
+      }
+      firstLoad = false;
+      renderAll();
+    }, function(err){
+      console.warn('Portfolio live sync error:', err);
+      toast('⚠️ Could not load your saved data — check your connection and reload.');
+      renderAll();
+    });
+  }
+
+  renderAll();
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<script type="module">
+  // ── Real Firebase Auth + authenticated writes — same pattern as retirementpassport ──
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyBlS1XvDnaITlCCACPOUn1YbrV_kRI0uQ0",
+    authDomain:        "smartpera-passport.firebaseapp.com",
+    databaseURL:       "https://smartpera-passport-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:         "smartpera-passport",
+    storageBucket:     "smartpera-passport.firebasestorage.app",
+    messagingSenderId: "532653072063",
+    appId:             "1:532653072063:web:e22685f1d9316edd35700a"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  window.__spAuthUser = undefined;
+  onAuthStateChanged(auth, function(user){
+    window.__spAuthUser = user || null;
+  });
+
+  // Single atomic multi-path update: portfolio data + shared financialHealth
+  // fields (assets/liabilities), so Net Worth (built next) can read the same
+  // numbers with zero risk of drift between the two apps.
+  window.__spSavePortfolio = function(uid, portfolioData, totals, currencyPref, fxOverride){
+    var user = window.__spAuthUser;
+    if (!user || user.uid !== uid) return Promise.reject(new Error('NOT_SIGNED_IN'));
+    var patch = {};
+    patch['users/' + uid + '/toolData/portfolio/savings'] = portfolioData.savings;
+    patch['users/' + uid + '/toolData/portfolio/insurance'] = portfolioData.insurance;
+    patch['users/' + uid + '/toolData/portfolio/loans'] = portfolioData.loans;
+    patch['users/' + uid + '/toolData/portfolio/lastUpdated'] = Date.now();
+    patch['users/' + uid + '/financialHealth/portfolioAssets'] = totals.totalAssets;
+    patch['users/' + uid + '/financialHealth/portfolioLiabilities'] = totals.totalLiabilities;
+    patch['users/' + uid + '/passport/currencyPref'] = currencyPref;
+    if (typeof fxOverride === 'number') patch['users/' + uid + '/passport/fxOverride'] = fxOverride;
+    return update(ref(db), patch);
+  };
+
+  window.__spWatchPortfolio = function(uid, onData, onError){
+    onValue(ref(db, 'users/' + uid + '/toolData/portfolio'), function(snap){
+      onData('portfolio', snap.exists() ? snap.val() : {});
+    }, function(err){ onError(err); });
+    onValue(ref(db, 'users/' + uid + '/passport'), function(snap){
+      onData('passport', snap.exists() ? snap.val() : {});
+    }, function(err){ onError(err); });
+  };
+
+  window.__spSaveCurrencyPref = function(currencyPref, fxOverride){
+    var user = window.__spAuthUser;
+    if (!user) return;
+    var patch = { currencyPref: currencyPref };
+    if (typeof fxOverride === 'number') patch.fxOverride = fxOverride;
+    else patch.fxOverride = null;
+    update(ref(db, 'users/' + user.uid + '/passport'), patch).catch(function(){});
+  };
+</script>
+
+</body>
+</html>
