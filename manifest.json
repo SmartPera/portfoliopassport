@@ -1,0 +1,28 @@
+{
+  "name": "My Portfolio — SmartPera Passport",
+  "short_name": "My Portfolio",
+  "description": "Track your investment portfolio — built for Filipinos worldwide",
+  "start_url": "/portfoliopassport/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#1A237E",
+  "background_color": "#1A237E",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "screenshots": []
+}
